@@ -131,7 +131,7 @@ local spinSpeed = 50  -- Default rotation speed
 -- Slider to set spin speed
 local SpinSlider = MainTab:CreateSlider({
     Name = "Spin Speed",
-    Range = {0, 100},
+    Range = {0, 1000},
     Increment = 1,
     Suffix = "Speed",
     CurrentValue = 50,
