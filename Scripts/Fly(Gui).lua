@@ -110,8 +110,8 @@ local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
 nowe = false
 
 game:GetService("StarterGui"):SetCore("SendNotification", { 
-    Title = "Fly GUI by BOITONETO";
-    Text = "fly gui BOITONETO";
+    Title = "Fly GUI";
+    Text = "fly gui";
     Icon = ""})
 Duration = 16;
 
