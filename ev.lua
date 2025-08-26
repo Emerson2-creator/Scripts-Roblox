@@ -1,0 +1,380 @@
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local selectedTheme = "Default"
+local Window = Rayfield:CreateWindow({
+   Name = "Evade - Script By Iliankytb",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Evade",
+   LoadingSubtitle = "Script By Iliankytb",
+   Theme = selectedTheme, -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "SaverEvade", -- Create a custom folder for your hub/game
+      FileName = "K"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
+local InfoTab = Window:CreateTab("Info")
+local PlayerTab = Window:CreateTab("Player")
+local GameTab = Window:CreateTab("Game")
+local EspTab = Window:CreateTab("Esp")
+local DiscordTab = Window:CreateTab("Discord")
+local SettingsTab = Window:CreateTab("Settings")
+local ActiveSpeedBoost,ActiveEspPlayers,ActiveEspBots,ActiveAutoWin,ActiveAutoFarmMoney,InReviving,AutoFarmSummerEvent,ActiveEspSummerEvent,InTickets,ActiveDistanceEsp = false,false,false,false,false,false,false,false,false,false
+local ParagraphInfoServer = InfoTab:CreateParagraph({Title = "Info", Content = "Loading"})
+Rayfield:Notify({
+   Title = "Evade Version",
+   Content = "V.0.14",
+   Duration = 2.5,
+   Image = "rewind",
+})
+
+local function CreateEsp(Char, Color, Text,Parent,Number)
+	if not Char then return end
+	if Char:FindFirstChild("ESP") and Char:FindFirstChildOfClass("Highlight") then return end
+
+	
+	local highlight = Char:FindFirstChildOfClass("Highlight") or Instance.new("Highlight")
+	highlight.Name = "ESP_Highlight"
+highlight.Adornee = Char
+highlight.FillColor = Color
+highlight.FillTransparency = 1
+highlight.OutlineColor = Color
+highlight.OutlineTransparency = 0
+highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+highlight.Enabled = true
+	highlight.Parent = Char
+
+	
+	local billboard = Char:FindFirstChild("ESP") or Instance.new("BillboardGui")
+	billboard.Name = "ESP"
+	billboard.Size = UDim2.new(0, 100, 0, 50)
+	billboard.AlwaysOnTop = true
+	billboard.StudsOffset = Vector3.new(0, Number, 0)
+	billboard.Adornee = Parent
+	billboard.Enabled = true
+	billboard.Parent = Parent
+
+	
+	local label = billboard:FindFirstChildOfClass("TextLabel") or Instance.new("TextLabel")
+	label.Size = UDim2.new(1, 0, 1, 0)
+	label.BackgroundTransparency = 1
+	label.Text = Text
+	label.TextColor3 = Color
+	label.TextScaled = true
+	label.Parent = billboard
+task.spawn(function()
+		local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
+
+while highlight and billboard and Parent and Parent.Parent do
+	local cameraPosition = Camera and Camera.CFrame.Position
+	if cameraPosition and Parent and Parent:IsA("BasePart") then
+	local distance = (cameraPosition - Parent.Position).Magnitude
+				task.spawn(function()
+if ActiveDistanceEsp then
+label.Text = Text.." ("..math.floor(distance + 0.5).." m)"
+else
+label.Text = Text
+end
+end)
+	end
+
+	RunService.Heartbeat:Wait()
+end
+
+	end)
+end
+local function KeepEsp(Char,Parent)
+	if Char and Char:FindFirstChildOfClass("Highlight") and Parent:FindFirstChildOfClass("BillboardGui") then
+		Char:FindFirstChildOfClass("Highlight"):Destroy()
+		Parent:FindFirstChildOfClass("BillboardGui"):Destroy()
+	end
+end
+local function copyToClipboard(text)
+    if setclipboard then
+        setclipboard(text)
+    else
+        warn("setclipboard is not supported in this environment.")
+    end
+end
+local DiscordLink = DiscordTab:CreateButton({
+   Name = "Discord Link",
+   Callback = function()
+copyToClipboard("https://discord.gg/E2TqYRsRP4")
+end,
+})
+local function GetDownedPlayer()
+        for _, v in pairs(game.Workspace.Game.Players:GetChildren()) do
+            if v:GetAttribute("Downed") then
+                return v
+            end
+        end
+        return nil
+    end
+local EspPlayersToggle = EspTab:CreateToggle({
+   Name = "Players Esp",
+   CurrentValue = false,
+   Flag = "EspPlayers", 
+   Callback = function(Value)
+ActiveEspPlayers = Value 
+task.spawn(function() 
+while ActiveEspPlayers do
+for _,Assets in pairs(Game.Players:GetChildren()) do  
+task.spawn(function()
+if Assets and Assets.Character and Assets.Character:FindFirstChild("Head") and not Assets.Character:FindFirstChildOfClass("Highlight") and not Assets.Character.Head:FindFirstChildOfClass("BillboardGui") then 
+CreateEsp(Assets.Character,Color3.fromRGB(255,255,255),Assets.Name,Assets.Character.Head,1) 
+end 
+end)
+end  
+wait(0.1) end
+for _,Assets in pairs(Game.Players:GetChildren()) do  
+if Assets and Assets.Character and Assets.Character:FindFirstChild("Head") and Assets.Character:FindFirstChildOfClass("Highlight") and Assets.Character.Head:FindFirstChildOfClass("BillboardGui") then 
+KeepEsp(Assets.Character,Assets.Character.Head) 
+end 
+end   
+end)
+end,
+})
+local EspBotsToggle = EspTab:CreateToggle({
+   Name = "Bots Esp",
+   CurrentValue = false,
+   Flag = "EspBots", 
+   Callback = function(Value)
+ActiveEspBots = Value 
+task.spawn(function() 
+while ActiveEspBots do
+for _,Assets in pairs(Game.Workspace.Game.Players:GetChildren()) do  
+if Assets and Assets:FindFirstChild("Hitbox") and not Assets:FindFirstChildOfClass("Highlight") and not Assets:FindFirstChild("Hitbox"):FindFirstChildOfClass("BillboardGui") then 
+Assets.Hitbox.Transparency = 0
+CreateEsp(Assets,Color3.fromRGB(255,0,0),Assets.Name,Assets.Hitbox,-2) 
+end 
+end  
+wait(0.1) end
+for _,Assets in pairs(Game.Workspace.Game.Players:GetChildren()) do  
+if Assets and Assets:FindFirstChild("Hitbox")  and Assets:FindFirstChildOfClass("Highlight") and Assets:FindFirstChild("Hitbox"):FindFirstChildOfClass("BillboardGui") then 
+Assets.Hitbox.Transparency = 1
+KeepEsp(Assets,Assets.Hitbox) 
+end 
+end   
+end)
+end,
+})
+local EspSummerEventToggle = EspTab:CreateToggle({
+   Name = "Summer Event Esp",
+   CurrentValue = false,
+   Flag = "EspSummerEvent", 
+   Callback = function(Value)
+ActiveEspSummerEvent = Value 
+task.spawn(function() 
+while ActiveEspSummerEvent do
+for _,Assets in pairs(Game.Workspace.Game.Effects.Tickets:GetChildren()) do  
+if Assets and Assets.PrimaryPart and Assets.Name == "Visual" and not Assets:FindFirstChildOfClass("Highlight") and not Assets.PrimaryPart:FindFirstChildOfClass("BillboardGui") then 
+CreateEsp(Assets,Color3.fromRGB(0,255,255),"Tickets",Assets.PrimaryPart,-2) 
+end 
+end  
+wait(0.1) end
+for _,Assets in pairs(Game.Workspace.Game.Effects.Tickets:GetChildren()) do  
+if Assets and Assets.PrimaryPart and Assets.Name == "Visual"  and Assets:FindFirstChildOfClass("Highlight") and Assets.PrimaryPart:FindFirstChildOfClass("BillboardGui") then 
+KeepEsp(Assets,Assets.PrimaryPart) 
+end 
+end   
+end)
+end,
+})
+local AutoWinToggle = GameTab:CreateToggle({
+   Name = "Auto Farm Win",
+   CurrentValue = false,
+   Flag = "AutoWinToggle1", 
+   Callback = function(Value)
+ActiveAutoWin = Value 
+task.spawn(function() 
+while ActiveAutoWin do
+ if Game.Players.LocalPlayer.Character and Game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and (not InReviving or not Game.Players.LocalPlayer.Character:GetAttribute("Downed")) then
+local securityPart = game.Workspace:FindFirstChild("SecurityPart") or Instance.new("Part")
+            securityPart.Name = "SecurityPart"
+            securityPart.Size = Vector3.new(10, 1, 10)
+            securityPart.Position = Vector3.new(0, 500, 0)  -- Position en hauteur
+            securityPart.Anchored = true
+            securityPart.Parent = game.Workspace
+            Game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = securityPart.CFrame + Vector3.new(0, 3, 0)  -- Téléporte le joueur au-dessus de la Part de sécurité
+            wait(0.5)
+            securityPart:Destroy()
+end 
+wait(0.1)
+end   
+end)
+end,
+})
+local AutoFarmMoneyToggle = GameTab:CreateToggle({
+   Name = "Auto Farm Money",
+   CurrentValue = false,
+   Flag = "AutoFarmMoneyToggle1", 
+   Callback = function(Value)
+ActiveAutoFarmMoney = Value 
+task.spawn(function() 
+while ActiveAutoFarmMoney do
+ if Game.Players.LocalPlayer.Character and Game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and not Game.Players.LocalPlayer.Character:GetAttribute("Downed") then
+local downedPlayer = GetDownedPlayer()
+          if downedPlayer and downedPlayer:FindFirstChild("HumanoidRootPart") then
+          InReviving = true    
+Game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = downedPlayer.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+             game:GetService("ReplicatedStorage").Events.Character.Interact:FireServer("Revive",true,downedPlayer)
+                wait(0.5)
+        InReviving = false
+            end
+end 
+wait(0.1)
+end   
+end)
+end,
+})
+local AutoFarmSummerEventToggle = GameTab:CreateToggle({
+   Name = "Auto Farm Summer Event",
+   CurrentValue = false,
+   Flag = "AutoFarmSummerEventToggle1", 
+   Callback = function(Value)
+AutoFarmSummerEvent = Value 
+task.spawn(function() 
+while AutoFarmSummerEvent do
+for _,Assets in pairs(Game.Workspace.Game.Effects.Tickets:GetChildren()) do  
+if Assets and Assets.PrimaryPart and Assets.Name == "Visual" then 
+ if Game.Players.LocalPlayer.Character and Game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and (not InReviving or not Game.Players.LocalPlayer.Character:GetAttribute("Downed")) then
+    Game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Assets.PrimaryPart.CFrame + Vector3.new(0, 3, 0)           
+end 
+end
+end
+wait(0.1)
+end   
+end)
+end,
+})
+local ValueSpeed = 16
+local PlayerSpeedSlider = PlayerTab:CreateSlider({
+   Name = "Player Speed",
+   Range = {0, 100},
+   Increment = 1,
+   Suffix = "Speeds",
+   CurrentValue = 16,
+   Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+CurrentValue = Value
+ValueSpeed = Value
+end,  ValueSpeed = CurrentValue,
+})
+
+local PlayerActiveModifyingSpeedToggle = PlayerTab:CreateToggle({
+   Name = "Active Modifying Player Speed",
+   CurrentValue = false,
+   Flag = "ButtonSpeed1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+  ActiveSpeedBoost = Value 
+task.spawn(function()
+while ActiveSpeedBoost do 
+task.spawn(function()
+Game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = ValueSpeed 
+end)
+task.wait(0.1)
+end end)
+end,
+})
+
+local ButtonUnloadCheat = SettingsTab:CreateButton({
+   Name = "Unload Cheat",
+   Callback = function()
+  Rayfield:Destroy()
+end,
+})
+local DistanceEspToggle = SettingsTab:CreateToggle({
+   Name = "Distance For Esp",
+   CurrentValue = false,
+   Flag = "ButtonDistanceEsp1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+  ActiveDistanceEsp = Value 
+end,
+})
+local Themes = {
+   ["Default"] = "Default",
+   ["Amber Glow"] = "AmberGlow",
+   ["Amethyst"] = "Amethyst",
+   ["Bloom"] = "Bloom",
+   ["Dark Blue"] = "DarkBlue",
+   ["Green"] = "Green",
+   ["Light"] = "Light",
+   ["Ocean"] = "Ocean",
+   ["Serenity"] = "Serenity"
+}
+
+local Dropdown = SettingsTab:CreateDropdown({
+   Name = "Change Theme",
+   Options = {"Default", "Amber Glow", "Amethyst", "Bloom", "Dark Blue", "Green", "Light", "Ocean", "Serenity"},
+   CurrentOption = selectedTheme,  -- pour afficher ce qui est réellement chargé
+   Flag = "ThemeSelection",
+   Callback = function(Selected)
+      local ident = Themes[Selected[1]]
+      Window.ModifyTheme(ident)  -- <— Applique le thème en direct
+   end, 
+})
+
+Rayfield:LoadConfiguration()
+local function getServerInfo()
+	local Players = game:GetService("Players")
+	local playerCount = #Players:GetPlayers()
+local maxPlayers = game:GetService("Players").MaxPlayers
+local isStudio = game:GetService("RunService"):IsStudio()
+
+	return {
+		PlaceId = game.PlaceId,
+		JobId = game.JobId,
+		IsStudio = isStudio,
+		CurrentPlayers = playerCount,
+MaxPlayers =maxPlayers
+	}
+end
+task.spawn(function()
+while true do
+	task.wait(1) 
+task.spawn(function()
+	local updatedInfo = getServerInfo()
+	local updatedContent = string.format(
+		"📌 PlaceId: %s\n🔑 JobId: %s\n🧪 IsStudio: %s\n👥 Players: %d/%d",
+		updatedInfo.PlaceId,
+		updatedInfo.JobId,
+		
+		tostring(updatedInfo.IsStudio),
+		updatedInfo.CurrentPlayers,
+updatedInfo.MaxPlayers
+	)
+
+	ParagraphInfoServer:Set({
+		Title = "Info",
+		Content = updatedContent
+	})
+end)
+end
+
+end)
