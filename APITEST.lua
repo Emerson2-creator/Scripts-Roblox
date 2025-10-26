@@ -1,29 +1,38 @@
--- API Simples (api.lua)
+if not game:IsLoaded() then game.Loaded:Wait() end
+local success, executor, version = pcall(identifyexecutor)
+if success then warn("Executor: " .. executor .. " | Version: " .. version) else warn("Unknown executor") end
+
+pcall(function() print([[
+
+ ___       ________  ___          
+|\  \     |\   __  \|\  \         
+\ \  \    \ \  \|\  \ \  \        
+ \ \  \    \ \  \\\  \ \  \       
+  \ \  \____\ \  \\\  \ \  \____  
+   \ \_______\ \_______\ \_______\
+    \|_______|\|_______|\|_______|
+
+
+]]) end)
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local API = {}
+local TheStrongestBattlegroundsScriptModule = {}
+local Module = TheStrongestBattlegroundsScriptModule
 
--- Garantir humanoid sempre atualizado
-local function GetHumanoid()
-    local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    return Character:WaitForChild("Humanoid")
+local Humanoid
+local function UpdateHumanoid()
+	local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	Humanoid = Character:WaitForChild("Humanoid")
+end UpdateHumanoid() LocalPlayer.CharacterAdded:Connect(UpdateHumanoid)
+
+function Module.SetWalkSpeed(value)
+	if Humanoid then Humanoid.WalkSpeed = value end
 end
 
-function API.SetWalkSpeed(value)
-    local Humanoid = GetHumanoid()
-    Humanoid.WalkSpeed = value
+function Module.SetJumpPower(value)
+	if Humanoid then Humanoid.JumpPower = value end
 end
 
-function API.SetJumpPower(value)
-    local Humanoid = GetHumanoid()
-    Humanoid.JumpPower = value
-end
 
-function API.Reset()
-    local Humanoid = GetHumanoid()
-    Humanoid.WalkSpeed = 16
-    Humanoid.JumpPower = 50
-end
-
-return API
